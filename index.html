@@ -1,0 +1,593 @@
+    <!--TODO:
+    - Create funnction within coral layer section to deal with the color assignments
+    - Create slider for coral data by years
+    - Pull styles out into a seperate .css file
+-->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>Coral Data</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.1/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.1/mapbox-gl.css' rel='stylesheet' />
+
+    <style>
+
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        h2,
+        h3 {
+            margin: 0px;
+            font-size: 1.2em;
+        }
+
+        h3 {
+            font-size: 1em;
+        }
+        .legend {
+            background-color: #fff;
+            border-radius: 5px;
+            bottom: 30px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.10);
+            font: 14px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+            text-align: right;
+            padding: 10px;
+            position: absolute;
+            right: 10px;
+            z-index: 1;
+        }
+        .legend div span {
+            border-radius: 50%;
+            display: inline-block;
+            height: 10px;
+            margin-right: 5px;
+            width: 10px;
+            text-align: left;
+        }
+        .legend h4 {
+            margin: 0 0 10px;
+        }
+        #map { 
+            position:absolute;
+            top:0;
+            bottom:0;
+            width:100%; 
+        }
+        #info {
+            background-color: #fff;
+            border-radius: 5px;
+            bottom: 30px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.10);
+            font: 14px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+            text-align: left;
+            padding: 10px;
+            position: absolute;
+            left:10px;
+            z-index: 1;
+        }
+        .boxdraw {
+            background: rgba(56,135,190,0.1);
+            border: 2px solid #3887be;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+        }
+        .mapboxgl-popup {
+          max-width: 200px;
+      }
+
+      .mapboxgl-popup-content {
+          text-align: center;
+          font-family: 'Open Sans', sans-serif;
+      }
+      #menu {
+background: #fff;
+position: absolute;
+z-index: 1;
+top: 10px;
+right: 10px;
+border-radius: 3px;
+width: 120px;
+border: 1px solid rgba(0,0,0,0.4);
+font-family: 'Open Sans', sans-serif;
+}
+ 
+#menu a {
+font-size: 13px;
+color: #404040;
+display: block;
+margin: 0;
+padding: 0;
+padding: 10px;
+text-decoration: none;
+border-bottom: 1px solid rgba(0,0,0,0.25);
+text-align: center;
+}
+ 
+#menu a:last-child {
+border: none;
+}
+ 
+#menu a:hover {
+background-color: #f8f8f8;
+color: #404040;
+}
+ 
+#menu a.active {
+background-color: #3887be;
+color: #ffffff;
+}
+ 
+#menu a.active:hover {
+background: #3074a4;
+}
+  </style>
+
+</head>
+<body>
+    <div id='map'>
+        <div id='coral-legend' class='legend'>
+            <h4>Vernacular Species</h4>
+            <div>Black Coral  <span style='background-color: #170D08'></span> </div>
+            <div>Calcareous Sponge  <span style='background-color: #4D5C1F  '></span> </div>
+            <div>Demosponge  <span style='background-color: #B4C85B '></span> </div>
+            <div>Glass Sponge  <span style='background-color: #C17A44 '></span> </div>
+            <div>Gold Sponge  <span style='background-color: #54321C '></span> </div>
+            <div>Gorgonian Coral  <span style='background-color: #861B44 '></span> </div>
+            <div>Lace Coral  <span style='background-color: #5D2673 '></span> </div>
+            <div>Sea Pen  <span style='background-color: #6C3BB0 '></span> </div>
+            <div>Stoloniferan Coral  <span style='background-color: #9F94DB '></span> </div>
+            <div>Soft Coral  <span style='background-color: #8CABD9 '></span> </div>
+            <div>Sponge (Unspecified)  <span style='background-color: #9FDFA2 '></span> </div>
+            <div>Homoscleromorph Sponge  <span style='background-color: #E8D3BA '></span> </div>
+            <div>Stony Coral  <span style='background-color: #F5E2E0 '></span> </div>
+        </div>
+    </div>
+    <pre id='info'></pre>
+    <nav id="menu"></nav>
+
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1Ijoiam1kZXJvbWVkaSIsImEiOiJjanRvc3Flam4wMTdpNDRydjZ5Z2ZjZnIxIn0.ad5B5OFmvhdAfPOd3f38fA';
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v11',
+            center: [-125.591669, 40.373335],
+            zoom: 5,
+            minZoom: 4,
+            maxZoom: 8,
+        });
+
+    //================================================GENERIC MAP FUNCTIONS==============================================================
+    //==============================================================================================================
+    //Disable features of the map we don't want
+    map["doubleClickZoom"].disable();
+    map["boxZoom"].disable();
+    map["dragRotate"].disable();
+    map["touchZoomRotate"].disableRotation();
+
+    //Create popup but not input it into the map
+    var popup = new mapboxgl.Popup({
+        closeButton: false,
+        closeOnClick: false
+    });
+
+    //==================================================MOUSE EVENTS========================================================
+    //==========================================================================================================
+    //When mouse hovers a point, place popup on the map
+    map.on('mouseenter', 'coral', function(e) {
+        map.getCanvas().style.cursor = 'pointer';
+
+    //Find the coordinates and description for the point that is being hovered over
+    var coordinates = e.features[0].geometry.coordinates.slice();
+    var description = "Depth: " + map.queryRenderedFeatures(e.point)[0].properties["DepthInMeters"];
+
+    // Ensure that if the map is zoomed out such that multiple copies of the feature are available
+    while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+    }
+
+    // Populate the popup and set its coordinates
+    popup.setLngLat(coordinates)
+    .setHTML(description)
+    .addTo(map);
+});
+
+    //==========================================================================================================
+    //Hovering pop-ups get destroyed for each layer when mouse leaves
+    map.on('mouseleave', 'coral', function() {
+        map.getCanvas().style.cursor = '';
+        popup.remove();
+    });
+
+    //==========================================================================================================
+    //===============================================MAP LOAD FUNCTION===========================================================
+    //==========================================================================================================
+    //Waits till everything is loaded before displaying
+    map.on('load', function() {
+
+    //Load data in the source not from Mapbox studio
+    map.addSource('10m-bathymetry-81bsvj', {
+        type: 'vector',
+        url: 'mapbox://mapbox.9tm8dx88'
+    });
+
+    //=========================================================================================================
+    //Removes all the extra land coverage items
+    //Must come after loading in all data
+    map.style.stylesheet.layers.forEach(function(layer) {
+        if (layer.type === 'symbol') {
+            map.removeLayer(layer.id);
+        }
+        if (layer.type === 'line') {
+            map.removeLayer(layer.id);
+        }
+        if (layer.type === 'fill'){
+            if (layer.id !== 'water') {
+                if (layer.id !== 'land-structure-polygon') {
+        if (layer.id !== 'admin-1-boundary'){
+            if (layer.id !== 'admin-1-boundary-bg'){
+                map.removeLayer(layer.id);
+            }
+        }
+    }
+}
+
+}
+});
+    map.setPaintProperty('land', 'background-color', [
+      "interpolate",
+      ["linear"],
+      ["zoom"],
+      3,
+      "hsl(107, 0%, 52%)",
+      19,
+      "hsl(130, 3%, 41%)"
+      ]);
+    map.setPaintProperty('water', 'fill-opacity', 1);
+    map.setPaintProperty('water', 'fill-color', '#78bced');
+
+    //===============================================VARIABLES==========================================================
+    //=========================================================================================================
+    //Highlighting box variables
+    var canvas = map.getCanvasContainer();
+    var start;
+    var current;
+    var box;
+
+    //==================================================OCEAN MAP LAYER=======================================================
+    //==========================================================================================================
+    //Adds the ocean topographical map to map
+    map.addLayer({
+        "id": "10m-bathymetry-81bsvj",
+        "type": "fill",
+        "source": "10m-bathymetry-81bsvj",
+        "source-layer": "10m-bathymetry-81bsvj",
+        "layout": {'visibility': 'visible'},
+        "paint": {
+            "fill-outline-color": "hsla(337, 82%, 62%, 0)",
+            "fill-color": [ "interpolate",
+            [ "cubic-bezier",
+            0, 0.5,
+            1, 0.5 ],
+            ["get", "DEPTH"],
+            200,  "#78bced",
+            9000, "#15659f"
+            ]
+        }
+    }, 'land-structure-polygon');
+
+    //Add countor lines for the topographical ocean map
+    map.addLayer({
+        "id": "10m-bathymetry-81bsvj-line",
+        "type": "line",
+        "source": "10m-bathymetry-81bsvj",
+        "source-layer": "10m-bathymetry-81bsvj",
+        "layout": {'visibility': 'visible'},
+        'paint': {
+            "line-width": 1.2,
+            "line-opacity": 0.25
+        }
+    }, 'land-structure-polygon');
+
+    //Add edge of the water to give highlighting
+    map.addLayer({
+        "id": "water-lines",
+        "type": "line",
+        "source": "composite",
+        "source-layer": "water",
+        "layout": {'visibility': 'visible'},
+        'paint': {
+            "line-width": 3,
+            "line-opacity": 0.7,
+            "line-color": "#086a8e",
+            "line-blur": 0.5
+        }
+    }, 'land-structure-polygon');
+
+    //Add heatmap to the map
+    map.addLayer({
+        "id": "coral_heat",
+        "type": "heatmap",
+        "source": {
+            type: 'vector',
+            url: 'mapbox://jmderomedi.4m9z82qw'
+        },
+        "source-layer": "updated_parsed-36sw6u",
+        "paint":{
+            'heatmap-weight': {
+      property: 'dbh',
+      type: 'exponential',
+      stops: [
+        [1, 0],
+        [62, 1]
+      ]
+    },
+    // increase intensity as zoom level increases
+    'heatmap-intensity': {
+      stops: [
+        [11, 1],
+        [15, 3]
+      ]
+    },
+    // assign color values be applied to points depending on their density
+    'heatmap-color': [
+      'interpolate',
+      ['linear'],
+      ['heatmap-density'],
+      0, 'rgba(236,222,239,0)',
+      0.2, 'rgb(208,209,230)',
+      0.4, 'rgb(166,189,219)',
+      0.6, 'rgb(103,169,207)',
+      0.8, 'rgb(28,144,153)'
+    ],
+    // increase radius as zoom increases
+    'heatmap-radius': {
+      stops: [
+        [11, 15],
+        [15, 20]
+      ]
+    },
+    // decrease opacity to transition into the circle layer
+    'heatmap-opacity': {
+      default: 1,
+      stops: [
+        [14, 1],
+        [15, 0]
+      ]
+    }
+  }
+    });
+    //=================================================CORAL/SPONGE DATA LAYERS========================================================
+    //=========================================================================================================
+    //Adds coral data for each year that I am looking for, 2012-2017
+    //Loading separately allows for the ability to remove certian layers when needed and lowers total MB of tilesets
+    //Each layer also is modified by the vernacular name of each coral
+    var colors = ['#170D08', '#4D5C1F', '#B4C85B', '#C17A44', '#54321C', '#861B44', '#5D2673', '#6C3BB0', '#9F94DB', '#8CABD9', '#9FDFA2', '#E8D3BA', '#E8D3BA', '#E8D3BA'];
+    map.addLayer({
+        "id": "coral",
+        "type": "circle",
+        "source": {
+            type: 'vector',
+            url: 'mapbox://jmderomedi.4m9z82qw'
+        },
+        "source-layer": "updated_parsed-36sw6u",
+        "paint":{
+            'circle-opacity': 1,
+            'circle-radius': [
+            "interpolate",
+            ["exponential", .8],
+            ["zoom"],
+            4,
+            1,
+            12,
+            12
+            ],
+    //Color has no meaning yet
+    'circle-color': [
+    'match',
+    ['get', 'VernacularNameCategory'],
+    'black coral', colors[0],
+    'calcareous sponge', colors[1],
+    'demosponge', colors[2],
+    'glass sponge', colors[3],
+    'gold sponge', colors[4],
+    'gorgonian coral', colors[5],
+    'lace coral', colors[6],
+    'sea pen', colors[7],
+    'stoloniferan coral', colors[8],
+    'soft coral', colors[9],
+    'sponge (unspecified)', colors[10],
+    'homoscleromorph sponge', colors[11],
+    'stony coral (unspecified)', colors[12],
+    'stony coral (cup coral)', colors[12],
+    'stony coral (branching)', colors[12],
+
+    /* other */ '#ffffff'
+    ] 
+}
+});
+
+    map.addLayer({
+        "id": "coral_highlighted",
+        "type": "circle",
+        "source": {
+            type: 'vector',
+            url: 'mapbox://jmderomedi.4m9z82qw'
+        },
+        "source-layer": "updated_parsed-36sw6u",
+        "visibility": 'visible',
+        "paint": {
+            "circle-opacity": 0,
+            "circle-stroke-width": 2,
+            "circle-stroke-color": "#ffffff",
+    //"circle-color": "#c3c5c9",
+    'circle-radius': [
+    "interpolate",
+    ["exponential", .8],
+    ["zoom"],
+    4,
+    1,
+    12,
+    12
+    ],
+},
+"filter": ["in", "CatalogNumber", ""]
+});
+
+//=================================================Layer Changing Buttons========================================================
+    //=========================================================================================================
+    var toggleableLayerIds = [ 'coral', 'coral_heat' ];
+
+for (var i = 0; i < toggleableLayerIds.length; i++) {
+var id = toggleableLayerIds[i];
+ 
+var link = document.createElement('a');
+link.href = '#';
+link.className = 'active';
+link.textContent = id;
+ 
+link.onclick = function (e) {
+var clickedLayer = this.textContent;
+e.preventDefault();
+e.stopPropagation();
+ 
+var visibility = map.getLayoutProperty(clickedLayer, 'visibility');
+ 
+if (visibility === 'visible') {
+map.setLayoutProperty(clickedLayer, 'visibility', 'none');
+this.className = '';
+} else {
+this.className = 'active';
+map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
+}
+};
+ 
+var layers = document.getElementById('menu');
+layers.appendChild(link);
+}
+    //=================================================CANVAS/HIGHLIGHTING BOX========================================================
+    //=========================================================================================================
+    canvas.addEventListener('mousedown', mouseDown, true);
+    document.addEventListener('keydown', onKeyDown);
+
+    // Return the xy coordinates of the mouse position
+    function mousePos(e) {
+        var rect = canvas.getBoundingClientRect();
+            return new mapboxgl.Point(
+                e.clientX - rect.left - canvas.clientLeft,
+                e.clientY - rect.top - canvas.clientTop
+                );
+        }
+
+        function mouseDown(e) {
+    // Continue the rest of the function if the shiftkey is pressed.
+    if (!(e.shiftKey && e.button === 0)) return;
+    map.dragPan.disable();
+        document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+    // Capture the first xy coordinates
+    start = mousePos(e);
+    }//END mouseDown
+
+    function onMouseMove(e) {
+    // Capture the ongoing xy coordinates
+    current = mousePos(e);
+    // Append the box element if it doesnt exist
+    if (!box) {
+        box = document.createElement('div');
+            box.classList.add('boxdraw');
+                box.setAttribute('id', 'hightlight-box')
+                    canvas.appendChild(box);
+    }//END onMouseMove
+
+    //Find and save the min and max values of xy
+    var minX = Math.min(start.x, current.x),
+        maxX = Math.max(start.x, current.x),
+            minY = Math.min(start.y, current.y),
+                maxY = Math.max(start.y, current.y);
+
+    // Adjust width and xy position of the box element ongoing
+    var pos = 'translate(' + minX + 'px,' + minY + 'px)';
+    box.style.transform = pos;
+    box.style.WebkitTransform = pos;
+    box.style.width = maxX - minX + 'px';
+    box.style.height = maxY - minY + 'px';
+}
+
+function onMouseUp(e) {
+    finish([start, mousePos(e)]);
+    }//END onMouseUp
+
+    function onKeyDown(e) {
+        if (e.keyCode === 27) {
+            map.setLayoutProperty('coral_highlighted', 'visibility', 'none');
+                            }
+    }//END onKeyDown
+
+    function finish(bbox) {
+        document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+
+    //Delete highlight box object
+    if (box) {
+        box.parentNode.removeChild(box);
+            box = null;
+        }
+
+    // If bbox exists. use this value as the argument for `queryRenderedFeatures`
+    if (bbox) {
+        var features = map.queryRenderedFeatures(bbox, { layers: ['coral'] });
+
+            if (features.length >= 100000) {
+                return window.alert('Select a smaller number of features');
+            }
+
+    // Run through the selected features and set a filter to match features with unique catalog number in the data to activate the `coral-hightlighted' layer.
+    var filter = features.reduce(function(memo, feature) {
+        memo.push(feature.properties.CatalogNumber);
+        return memo;
+    }, ['in', 'CatalogNumber']);
+
+    map.setFilter("coral_highlighted", filter);
+                    }
+    //Reactivate grab panning
+    map.dragPan.enable();
+        map.setLayoutProperty('coral_highlighted', 'visibility', 'visible');
+    }//END finish
+
+    map.on('mousemove', function(e) {
+        document.getElementById('info').innerHTML =
+    // e.lngLat is the longitude, latitude geographical position of the event
+    //Function reduces the significant values of the returned lat/long
+    JSON.stringify(e.lngLat, function(key, val) {
+        return val.toFixed ? Number(val.toFixed(3)) : val;
+    })
+
+    var features = map.queryRenderedFeatures(e.point, { layers: ['coral_highlighted'] });
+    map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
+
+    //Checks if the selected items is to many to reduce the chance of overloading
+    if (!features.length) {
+        popup.remove();
+        return;
+    }
+
+    var feature = features[0];
+    //Creates a popup for the vernacular name of the highlighted coral
+    popup.setLngLat(e.lngLat)
+    .setText(feature.properties.VernacularNameCategory)
+    .addTo(map);
+});
+
+
+    }); //END MAP.ON
+    console.log(map);
+</script>
+
+</body>
