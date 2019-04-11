@@ -11,6 +11,7 @@
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.1/mapbox-gl.js'></script>
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.1/mapbox-gl.css' rel='stylesheet' />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 
     <style>
 
@@ -27,6 +28,66 @@
 
         h3 {
             font-size: 1em;
+        }
+        .charts_depth {
+            background-color: #fff;
+            border-radius: 5px;
+            top: 200px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.10);
+            font: 14px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+            text-align: right;
+            padding: 10px;
+            position: absolute;
+            left: 10px;
+            z-index: 1;
+        }
+        .charts_depth div span {
+            border-radius: 50%;
+            display: inline-block;
+            height: 10px;
+            margin-left: 5px;
+            width: 10px;
+            text-align: left;
+        }
+        .charts_count {
+            background-color: #fff;
+            border-radius: 5px;
+            top: 15px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.10);
+            font: 14px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+            text-align: right;
+            padding: 10px;
+            position: absolute;
+            left: 10px;
+            z-index: 1;
+        }
+        .charts_count div span {
+            border-radius: 50%;
+            display: inline-block;
+            height: 10px;
+            margin-left: 5px;
+            width: 10px;
+            text-align: left;
+        }
+        .charts_depth_count {
+            background-color: #fff;
+            border-radius: 5px;
+            top: 390px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.10);
+            font: 14px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+            text-align: right;
+            padding: 10px;
+            position: absolute;
+            left: 10px;
+            z-index: 1;
+        }
+        .charts_depth_count div span {
+            border-radius: 50%;
+            display: inline-block;
+            height: 10px;
+            margin-left: 5px;
+            width: 10px;
+            text-align: left;
         }
         .legend {
             background-color: #fff;
@@ -87,68 +148,84 @@
           font-family: 'Open Sans', sans-serif;
       }
       #menu {
-background: #fff;
-position: absolute;
-z-index: 1;
-top: 10px;
-right: 10px;
-border-radius: 3px;
-width: 120px;
-border: 1px solid rgba(0,0,0,0.4);
-font-family: 'Open Sans', sans-serif;
-}
- 
-#menu a {
-font-size: 13px;
-color: #404040;
-display: block;
-margin: 0;
-padding: 0;
-padding: 10px;
-text-decoration: none;
-border-bottom: 1px solid rgba(0,0,0,0.25);
-text-align: center;
-}
- 
-#menu a:last-child {
-border: none;
-}
- 
-#menu a:hover {
-background-color: #f8f8f8;
-color: #404040;
-}
- 
-#menu a.active {
-background-color: #3887be;
-color: #ffffff;
-}
- 
-#menu a.active:hover {
-background: #3074a4;
-}
-  </style>
+        background: #fff;
+        position: absolute;
+        z-index: 1;
+        top: 10px;
+        right: 10px;
+        border-radius: 3px;
+        width: 120px;
+        border: 1px solid rgba(0,0,0,0.4);
+        font-family: 'Open Sans', sans-serif;
+    }
+
+    #menu a {
+        font-size: 13px;
+        color: #404040;
+        display: block;
+        margin: 0;
+        padding: 0;
+        padding: 10px;
+        text-decoration: none;
+        border-bottom: 1px solid rgba(0,0,0,0.25);
+        text-align: center;
+    }
+
+    #menu a:last-child {
+        border: none;
+    }
+
+    #menu a:hover {
+        background-color: #f8f8f8;
+        color: #404040;
+    }
+
+    #menu a.active {
+        background-color: #3887be;
+        color: #ffffff;
+    }
+
+    #menu a.active:hover {
+        background: #3074a4;
+    }
+</style>
 
 </head>
 <body>
     <div id='map'>
         <div id='coral-legend' class='legend'>
-            <h4>Vernacular Species</h4>
-            <div>Black Coral  <span style='background-color: #170D08'></span> </div>
-            <div>Calcareous Sponge  <span style='background-color: #4D5C1F  '></span> </div>
-            <div>Demosponge  <span style='background-color: #B4C85B '></span> </div>
-            <div>Glass Sponge  <span style='background-color: #C17A44 '></span> </div>
-            <div>Gold Sponge  <span style='background-color: #54321C '></span> </div>
-            <div>Gorgonian Coral  <span style='background-color: #861B44 '></span> </div>
-            <div>Lace Coral  <span style='background-color: #5D2673 '></span> </div>
-            <div>Sea Pen  <span style='background-color: #6C3BB0 '></span> </div>
-            <div>Stoloniferan Coral  <span style='background-color: #9F94DB '></span> </div>
-            <div>Soft Coral  <span style='background-color: #8CABD9 '></span> </div>
-            <div>Sponge (Unspecified)  <span style='background-color: #9FDFA2 '></span> </div>
-            <div>Homoscleromorph Sponge  <span style='background-color: #E8D3BA '></span> </div>
-            <div>Stony Coral  <span style='background-color: #F5E2E0 '></span> </div>
+            <form action="/action_page.php">
+                <input type="checkbox" name="CoralSpecies" value="coral_check"> Coral Species<br>
+                <div>Black Coral  <span style='background-color: #b35806'></span> </div>
+                <div>Gorgonian Coral  <span style='background-color: #f1a340 '></span> </div>
+                <div>Lace Coral  <span style='background-color: #fee0b6 '></span> </div>
+                <div>Stoloniferan Coral  <span style='background-color: #d8daeb '></span> </div>
+                <div>Soft Coral  <span style='background-color: #998ec3 '></span> </div>
+                <div>Stony Coral  <span style='background-color: #542788 '></span> </div>
+                <input type="checkbox" name="SpongeSpecies" value="sponge_check"> Sponge Species<br>
+                <div>Calcareous Sponge  <span style='background-color: #c51b7d  '></span> </div>
+                <div>Demosponge  <span style='background-color: #e9a3c9 '></span> </div>
+                <div>Glass Sponge  <span style='background-color: #fde0ef '></span> </div>
+                <div>Gold Sponge  <span style='background-color: #f7f7f7 '></span> </div>
+                <div>Sea Pen  <span style='background-color: #e6f5d0 '></span> </div>
+                <div>Homoscleromorph Sponge  <span style='background-color: #a1d76a '></span> </div>
+                <div>Sponge (Unspecified)  <span style='background-color: #4d9221 '></span> </div>
+            </form>
         </div>
     </div>
+
+    <div id = 'chart-legend', class ='charts_depth'>
+        <canvas id="depth_chart"></canvas>
+    </div>
+     
+     <div id = 'chart-legend', class ='charts_count'>
+        <canvas id="count_chart"></canvas>
+    </div>
+
+     <!--<div id = 'chart-legend', class ='charts_depth_count'>
+        <canvas id="depth_count_chart"></canvas>
+    </div>-->
+
     <pre id='info'></pre>
     <nav id="menu"></nav>
 
@@ -160,7 +237,7 @@ background: #3074a4;
             center: [-125.591669, 40.373335],
             zoom: 5,
             minZoom: 4,
-            maxZoom: 8,
+            maxZoom: 12,
         });
 
     //================================================GENERIC MAP FUNCTIONS==============================================================
@@ -176,6 +253,7 @@ background: #3074a4;
         closeButton: false,
         closeOnClick: false
     });
+
 
     //==================================================MOUSE EVENTS========================================================
     //==========================================================================================================
@@ -230,16 +308,16 @@ background: #3074a4;
         if (layer.type === 'fill'){
             if (layer.id !== 'water') {
                 if (layer.id !== 'land-structure-polygon') {
-        if (layer.id !== 'admin-1-boundary'){
-            if (layer.id !== 'admin-1-boundary-bg'){
-                map.removeLayer(layer.id);
+                    if (layer.id !== 'admin-1-boundary'){
+                        if (layer.id !== 'admin-1-boundary-bg'){
+                            map.removeLayer(layer.id);
+                        }
+                    }
+                }
             }
-        }
-    }
-}
 
-}
-});
+        }
+    });
     map.setPaintProperty('land', 'background-color', [
       "interpolate",
       ["linear"],
@@ -251,6 +329,7 @@ background: #3074a4;
       ]);
     map.setPaintProperty('water', 'fill-opacity', 1);
     map.setPaintProperty('water', 'fill-color', '#78bced');
+    map.addControl(new mapboxgl.NavigationControl());
 
     //===============================================VARIABLES==========================================================
     //=========================================================================================================
@@ -259,7 +338,14 @@ background: #3074a4;
     var start;
     var current;
     var box;
-
+    var x = 0;
+    var y = 0;
+    var z = 0;
+    var count = 0;
+    var listOfNumbers = [];
+    var depthAverages = [];
+    var depthCounts = [];
+    var countCounts = [];
     //==================================================OCEAN MAP LAYER=======================================================
     //==========================================================================================================
     //Adds the ocean topographical map to map
@@ -320,55 +406,70 @@ background: #3074a4;
         },
         "source-layer": "updated_parsed-36sw6u",
         "paint":{
-            'heatmap-weight': {
-      property: 'dbh',
-      type: 'exponential',
-      stops: [
-        [1, 0],
-        [62, 1]
-      ]
-    },
+            "heatmap-weight": [
+                "interpolate",
+                ["linear"],
+                ["get", "DepthInMeters"],
+                    0, 0.1,
+                    1000, 0.3,
+                    2000, 0.5,
+                    3000, 0.7,
+                    4000, 0.9,
+                    5000, 1.1,
+                    7000, 1.3     
+            ],
+           // 'heatmap-weight': {
+            //  property: 'dbh',
+            //  type: 'exponential',
+             // stops: [
+             // [1, 0],
+             // [12, 1]
+             // ]
+          //},
     // increase intensity as zoom level increases
-    'heatmap-intensity': {
-      stops: [
-        [11, 1],
-        [15, 3]
-      ]
-    },
+        "heatmap-intensity": [
+            "interpolate",
+            ["linear"],
+            ["zoom"],
+            0, 0,
+            12, 1
+        ],
     // assign color values be applied to points depending on their density
     'heatmap-color': [
-      'interpolate',
-      ['linear'],
-      ['heatmap-density'],
-      0, 'rgba(236,222,239,0)',
-      0.2, 'rgb(208,209,230)',
-      0.4, 'rgb(166,189,219)',
-      0.6, 'rgb(103,169,207)',
-      0.8, 'rgb(28,144,153)'
+        'interpolate',
+        ['linear'],
+        ['heatmap-density'],
+        0, 'rgba(255,255,178,0)',
+        0.3, '#fed976',
+        0.5, '#feb24c',
+        0.7, '#fd8d3c',
+        0.9, '#f03b20',
+        1.1, "#bd0026"
     ],
     // increase radius as zoom increases
-    'heatmap-radius': {
-      stops: [
-        [11, 15],
-        [15, 20]
-      ]
-    },
+    "heatmap-radius": [
+        "interpolate",
+        ["linear"],
+        ["zoom"],
+        0, 1,
+        12, 25
+    ],
     // decrease opacity to transition into the circle layer
-    'heatmap-opacity': {
-      default: 1,
-      stops: [
-        [14, 1],
-        [15, 0]
-      ]
-    }
-  }
-    });
+    "heatmap-opacity": [
+    "interpolate",
+    ["linear"],
+    ["zoom"],
+    6, 1,
+    8, 0
+    ]
+}
+});
     //=================================================CORAL/SPONGE DATA LAYERS========================================================
     //=========================================================================================================
     //Adds coral data for each year that I am looking for, 2012-2017
     //Loading separately allows for the ability to remove certian layers when needed and lowers total MB of tilesets
     //Each layer also is modified by the vernacular name of each coral
-    var colors = ['#170D08', '#4D5C1F', '#B4C85B', '#C17A44', '#54321C', '#861B44', '#5D2673', '#6C3BB0', '#9F94DB', '#8CABD9', '#9FDFA2', '#E8D3BA', '#E8D3BA', '#E8D3BA'];
+    var colors = ['#b35806', '#c51b7d', '#e9a3c9', '#fde0ef', '#f7f7f7', '#f1a340', '#fee0b6', '#e6f5d0', '#d8daeb', '#998ec3', '#4d9221', '#a1d76a', '#542788', '#542788'];
     map.addLayer({
         "id": "coral",
         "type": "circle",
@@ -378,16 +479,22 @@ background: #3074a4;
         },
         "source-layer": "updated_parsed-36sw6u",
         "paint":{
-            'circle-opacity': 1,
-            'circle-radius': [
-            "interpolate",
-            ["exponential", .8],
-            ["zoom"],
-            4,
-            1,
-            12,
-            12
-            ],
+         "circle-opacity": [
+         "interpolate",
+         ["linear"],
+         ["zoom"],
+         6, 0,
+         7, 1
+         ],
+         'circle-radius': [
+         "interpolate",
+         ["exponential", .8],
+         ["zoom"],
+         4,
+         1,
+         12,
+         12
+         ],
     //Color has no meaning yet
     'circle-color': [
     'match',
@@ -407,7 +514,6 @@ background: #3074a4;
     'stony coral (unspecified)', colors[12],
     'stony coral (cup coral)', colors[12],
     'stony coral (branching)', colors[12],
-
     /* other */ '#ffffff'
     ] 
 }
@@ -423,7 +529,13 @@ background: #3074a4;
         "source-layer": "updated_parsed-36sw6u",
         "visibility": 'visible',
         "paint": {
-            "circle-opacity": 0,
+            "circle-opacity": [
+         "interpolate",
+         ["linear"],
+         ["zoom"],
+         6, 0,
+         7, 1
+         ],
             "circle-stroke-width": 2,
             "circle-stroke-color": "#ffffff",
     //"circle-color": "#c3c5c9",
@@ -442,35 +554,36 @@ background: #3074a4;
 
 //=================================================Layer Changing Buttons========================================================
     //=========================================================================================================
-    var toggleableLayerIds = [ 'coral', 'coral_heat' ];
+  //  var toggleableLayerIds = [ 'coral', 'coral_heat' ];
 
-for (var i = 0; i < toggleableLayerIds.length; i++) {
-var id = toggleableLayerIds[i];
- 
-var link = document.createElement('a');
-link.href = '#';
-link.className = 'active';
-link.textContent = id;
- 
-link.onclick = function (e) {
-var clickedLayer = this.textContent;
-e.preventDefault();
-e.stopPropagation();
- 
-var visibility = map.getLayoutProperty(clickedLayer, 'visibility');
- 
-if (visibility === 'visible') {
-map.setLayoutProperty(clickedLayer, 'visibility', 'none');
-this.className = '';
-} else {
-this.className = 'active';
-map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
-}
-};
- 
-var layers = document.getElementById('menu');
-layers.appendChild(link);
-}
+    //for (var i = 0; i < toggleableLayerIds.length; i++) {
+     //   var id = toggleableLayerIds[i];
+
+     //   var link = document.createElement('a');
+     //   link.href = '#';
+      //  link.className = 'active';
+      //  link.textContent = id;
+
+       // link.onclick = function (e) {
+       //     var clickedLayer = this.textContent;
+       //     e.preventDefault();
+       //     e.stopPropagation();
+
+        //    var visibility = map.getLayoutProperty(clickedLayer, 'visibility');
+
+        //    if (visibility === 'visible') {
+         //       map.setLayoutProperty(clickedLayer, 'visibility', 'none');
+         //       this.className = '';
+         //   } else {
+        //        this.className = 'active';
+         //       map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
+         //   }
+       // };
+
+       // var layers = document.getElementById('menu');
+      //  layers.appendChild(link);
+  //  }
+
     //=================================================CANVAS/HIGHLIGHTING BOX========================================================
     //=========================================================================================================
     canvas.addEventListener('mousedown', mouseDown, true);
@@ -479,21 +592,29 @@ layers.appendChild(link);
     // Return the xy coordinates of the mouse position
     function mousePos(e) {
         var rect = canvas.getBoundingClientRect();
-            return new mapboxgl.Point(
-                e.clientX - rect.left - canvas.clientLeft,
-                e.clientY - rect.top - canvas.clientTop
-                );
-        }
+        return new mapboxgl.Point(
+            e.clientX - rect.left - canvas.clientLeft,
+            e.clientY - rect.top - canvas.clientTop
+            );
+    }
 
-        function mouseDown(e) {
+    function mouseDown(e) {
+
     // Continue the rest of the function if the shiftkey is pressed.
     if (!(e.shiftKey && e.button === 0)) return;
+
+    isClicked = true;
     map.dragPan.disable();
-        document.addEventListener('mousemove', onMouseMove);
-            document.addEventListener('mouseup', onMouseUp);
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
     // Capture the first xy coordinates
     start = mousePos(e);
     }//END mouseDown
+
+
+    var downClick_lat, downClick_long;
+    var upClick_lat, upClick_long;
+    var isClicked = false;
 
     function onMouseMove(e) {
     // Capture the ongoing xy coordinates
@@ -501,17 +622,17 @@ layers.appendChild(link);
     // Append the box element if it doesnt exist
     if (!box) {
         box = document.createElement('div');
-            box.classList.add('boxdraw');
-                box.setAttribute('id', 'hightlight-box')
-                    canvas.appendChild(box);
+        box.classList.add('boxdraw');
+        box.setAttribute('id', 'hightlight-box')
+        canvas.appendChild(box);
     }//END onMouseMove
 
-    //Find and save the min and max values of xy
+    //Find and save the min and max values of xy for rectangge drawing
     var minX = Math.min(start.x, current.x),
-        maxX = Math.max(start.x, current.x),
-            minY = Math.min(start.y, current.y),
-                maxY = Math.max(start.y, current.y);
-
+    maxX = Math.max(start.x, current.x),
+    minY = Math.min(start.y, current.y),
+    maxY = Math.max(start.y, current.y);
+ 
     // Adjust width and xy position of the box element ongoing
     var pos = 'translate(' + minX + 'px,' + minY + 'px)';
     box.style.transform = pos;
@@ -521,54 +642,121 @@ layers.appendChild(link);
 }
 
 function onMouseUp(e) {
+   
     finish([start, mousePos(e)]);
     }//END onMouseUp
 
     function onKeyDown(e) {
         if (e.keyCode === 27) {
             map.setLayoutProperty('coral_highlighted', 'visibility', 'none');
-                            }
+        }
     }//END onKeyDown
 
     function finish(bbox) {
         document.removeEventListener('mousemove', onMouseMove);
-            document.removeEventListener('mouseup', onMouseUp);
+        document.removeEventListener('mouseup', onMouseUp);
 
     //Delete highlight box object
     if (box) {
         box.parentNode.removeChild(box);
-            box = null;
-        }
+        box = null;
+    }
 
     // If bbox exists. use this value as the argument for `queryRenderedFeatures`
     if (bbox) {
-        var features = map.queryRenderedFeatures(bbox, { layers: ['coral'] });
+        isClicked = false;
 
-            if (features.length >= 100000) {
-                return window.alert('Select a smaller number of features');
-            }
+
+        var features = map.queryRenderedFeatures(bbox, { layers: ['coral'] });
+        //console.log(features);
+
+        if (features.length >= 100000) {
+            return window.alert('Select a smaller number of features');
+        }
+        
+        x = x / count;
+        y = y /count;
+        z = z /count;
+
+        var centerLong = Math.atan2(y,x);
+        var centerSquareRoot = Math.sqrt((x*x)+(y*y));
+        var centerLat = Math.atan2(z, centerSquareRoot);       
+        var target = new mapboxgl.LngLat(centerLong* 180 / Math.PI, centerLat* 180 / Math.PI);
+        map.flyTo({
+            center: target,
+            zoom: 9,
+            bearing: 0,
+            speed: 0.9, // make the flying slow
+            curve: 1.5, // change the speed at which it zooms out
+            easing: function (t) { return t; }
+        });
 
     // Run through the selected features and set a filter to match features with unique catalog number in the data to activate the `coral-hightlighted' layer.
+
     var filter = features.reduce(function(memo, feature) {
         memo.push(feature.properties.CatalogNumber);
         return memo;
     }, ['in', 'CatalogNumber']);
 
-    map.setFilter("coral_highlighted", filter);
-                    }
-    //Reactivate grab panning
+  
+
+    var depthFilter = features.reduce(function(memo, feature) {
+        memo.push(feature.properties.DepthInMeters);
+        return memo;
+    }, ['in', 'DepthInMeters']);
+
+
+     var nameFilter = features.reduce(function(memo, feature) {
+        memo.push(feature.properties.VernacularNameCategory);
+        return memo;
+    }, ['in', 'VernacularNameCategory']);
+  
+    //console.log(bar_chart_depth.data.datasets[0].data);
+    removeData(bar_chart_depth);
+    removeData(bar_chart_count);
+    //console.log(bar_chart_depth.data.datasets[0].data);
+
+
+    var i;
+    for (i = 2; i < depthFilter.length; i++) { 
+        addDepthData(bar_chart_depth, nameFilter[i], depthFilter[i]);
+        addCountData(bar_chart_count, nameFilter[i]);
+        
+    };
+    computeAddDepthData(bar_chart_depth);
+    computeAddCountData(bar_chart_count);
+    //console.log(bar_chart_depth.data);
+    console.log(bar_chart_count.data);
+    
+}
+
+  map.setFilter("coral_highlighted", filter);
+    //Reactivate grab panning for the user
     map.dragPan.enable();
-        map.setLayoutProperty('coral_highlighted', 'visibility', 'visible');
+    map.setLayoutProperty('coral_highlighted', 'visibility', 'visible');
     }//END finish
 
+    
     map.on('mousemove', function(e) {
         document.getElementById('info').innerHTML =
-    // e.lngLat is the longitude, latitude geographical position of the event
-    //Function reduces the significant values of the returned lat/long
     JSON.stringify(e.lngLat, function(key, val) {
         return val.toFixed ? Number(val.toFixed(3)) : val;
     })
 
+    if(isClicked){
+        var ll = e.lngLat.toArray();        //Array of long/lat coordinate
+        var lat = ll[1] * (Math.PI / 180);
+        var long = ll[0] * (Math.PI / 180);
+
+        var temp1 = Math.cos(lat) * Math.cos(long);
+        var temp2 = Math.cos(lat) * Math.sin(long);
+        var temp3 = Math.sin(lat);
+        x += temp1;
+        y += temp2;
+        z += temp3;
+        count += 1;
+
+    }
     var features = map.queryRenderedFeatures(e.point, { layers: ['coral_highlighted'] });
     map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
 
@@ -579,15 +767,139 @@ function onMouseUp(e) {
     }
 
     var feature = features[0];
+    var name = feature.properties.VernacularNameCategory;
+    var depth = feature.properties.DepthInMeters;
     //Creates a popup for the vernacular name of the highlighted coral
     popup.setLngLat(e.lngLat)
-    .setText(feature.properties.VernacularNameCategory)
+    .setText(name + depth)
     .addTo(map);
 });
 
 
     }); //END MAP.ON
+//============================================================Chart Stuff==========================================================================
+//var barChartlabels = ['stony coral (unspecified)', 'sponge (unspecified)', "sea pen", "soft coral", "glass sponge"];
+var ctx_depth = document.getElementById('depth_chart').getContext('2d');
+var bar_chart_depth = new Chart(ctx_depth, {
+    // The type of chart we want to create
+    type: 'bar',
+    // The data for our dataset
+    data: {
+        datasets: [{
+            label: 'Average Depth of Species',
+            backgroundColor: 'rgb(255, 99, 140)',
+            borderColor: 'rgb(255, 99, 140)'
+        }]
+    },
+
+    // Configuration options go here
+    options: {}
+});
+
+var ctx_count = document.getElementById('count_chart').getContext('2d');
+var bar_chart_count = new Chart(ctx_count, {
+    // The type of chart we want to create
+    type: 'bar',
+    // The data for our dataset
+    data: {
+        datasets: [{
+            label: 'Count of Species',
+            backgroundColor: 'rgb(99, 255, 140)',
+            borderColor: 'rgb(99, 255, 140)'
+        }]
+    },
+
+    // Configuration options go here
+    options: {}
+});
+
+var ctx_depth_count = document.getElementById('depth_count_chart').getContext('2d');
+var scatter_chart_depth_count = new Chart(ctx_depth_count, {
+    // The type of chart we want to create
+    type: 'scatter',
+    // The data for our dataset
+    data: {
+        datasets: [{
+            label: 'Count vs Depth',
+            backgroundColor: 'rgb(99, 255, 140)',
+            borderColor: 'rgb(99, 255, 140)'
+        }]
+    },
+
+    // Configuration options go here
+    options: {}
+});
+
+function addDepthData(chart, label, data) {
+    chart.data.labels.push(label);
+    depthAverages.push(data);
+    depthCounts.push(1);
+    var k;
+    for (k = 0; k < chart.data.labels.length - 1; k++) {
+          if (chart.data.labels[k] == label){
+            depthAverages[k] += data;
+            depthCounts[k] += 1;
+            chart.data.labels.pop();
+            depthAverages.pop();
+            depthCounts.pop();
+        }
+    }   
+}
+
+function computeAddDepthData(chart){
+    var l;
+    for (l = 0; l < depthAverages.length; l++){
+        depthAverages[l] = depthAverages[l]/depthCounts[l];
+        chart.data.datasets.forEach((dataset) => {
+        dataset.data.push(depthAverages[l]);
+        });
+    }
+    chart.update();
+}
+
+
+function addCountData(chart, label) {
+    chart.data.labels.push(label);
+    countCounts.push(1);
+    var k;
+    for (k = 0; k < chart.data.labels.length -1; k++) {
+          if (chart.data.labels[k] == label){
+            countCounts[k] += 1;
+            chart.data.labels.pop();
+            countCounts.pop();
+        }
+    }
+}
+
+function computeAddCountData(chart){
+    console.log(countCounts);
+    var l;
+    for (l = 0; l < countCounts.length; l++){
+        chart.data.datasets.forEach((dataset) => {
+        dataset.data.push(countCounts[l]);
+        });
+    }
+    chart.update(); 
+}
+
+function removeData(chart) {
+    depthAverages = [];
+    depthCounts = [];
+    countCounts = [];
+    chart.data.labels = [];
+
+    var m;
+    console.log(chart.data.datasets[0].data);
+    for (m =0; m < 1000; m++){    //No idea why length doesnt return properly, so throw it a large number and it works
+        chart.data.datasets[0].data.pop();
+    }
+
+    chart.update();
+}
+
     console.log(map);
 </script>
+
+
 
 </body>
