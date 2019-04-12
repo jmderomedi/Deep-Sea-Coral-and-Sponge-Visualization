@@ -7,7 +7,7 @@
 <html>
 <head>
     <meta charset='utf-8' />
-    <title>Coral Data</title>
+    <title>Coral/Sponge Visualization</title>
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.1/mapbox-gl.js'></script>
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.1/mapbox-gl.css' rel='stylesheet' />
@@ -148,27 +148,28 @@
           font-family: 'Open Sans', sans-serif;
       }
       #menu {
-        background: #fff;
+        background: #ffffff;
         position: absolute;
         z-index: 1;
-        top: 10px;
+        bottom: 370px;
         right: 10px;
-        border-radius: 3px;
-        width: 120px;
-        border: 1px solid rgba(0,0,0,0.4);
-        font-family: 'Open Sans', sans-serif;
+        font: 18px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+        text-align: right;
+        padding: 5px;
+        position: absolute;
+        right: 10px;
+        z-index: 1;
     }
 
     #menu a {
-        font-size: 13px;
+        font: 18px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
         color: #404040;
         display: block;
         margin: 0;
-        padding: 0;
-        padding: 10px;
+        padding: 5px;
         text-decoration: none;
         border-bottom: 1px solid rgba(0,0,0,0.25);
-        text-align: center;
+        text-align: right;
     }
 
     #menu a:last-child {
@@ -181,7 +182,7 @@
     }
 
     #menu a.active {
-        background-color: #3887be;
+        background-color: #404040;
         color: #ffffff;
     }
 
@@ -194,41 +195,34 @@
 <body>
     <div id='map'>
         <div id='coral-legend' class='legend'>
-            <form action="/action_page.php">
-                <input type="checkbox" name="CoralSpecies" value="coral_check"> Coral Species<br>
-                <div>Black Coral  <span style='background-color: #b35806'></span> </div>
-                <div>Gorgonian Coral  <span style='background-color: #f1a340 '></span> </div>
-                <div>Lace Coral  <span style='background-color: #fee0b6 '></span> </div>
-                <div>Stoloniferan Coral  <span style='background-color: #d8daeb '></span> </div>
-                <div>Soft Coral  <span style='background-color: #998ec3 '></span> </div>
-                <div>Stony Coral  <span style='background-color: #542788 '></span> </div>
-                <input type="checkbox" name="SpongeSpecies" value="sponge_check"> Sponge Species<br>
-                <div>Calcareous Sponge  <span style='background-color: #c51b7d  '></span> </div>
-                <div>Demosponge  <span style='background-color: #e9a3c9 '></span> </div>
-                <div>Glass Sponge  <span style='background-color: #fde0ef '></span> </div>
-                <div>Gold Sponge  <span style='background-color: #f7f7f7 '></span> </div>
-                <div>Sea Pen  <span style='background-color: #e6f5d0 '></span> </div>
-                <div>Homoscleromorph Sponge  <span style='background-color: #a1d76a '></span> </div>
-                <div>Sponge (Unspecified)  <span style='background-color: #4d9221 '></span> </div>
-            </form>
+            <h2>Coral Species</h2>
+            <div>Black Coral  <span style='background-color: #b35806'></span> </div>
+            <div>Gorgonian Coral  <span style='background-color: #f1a340 '></span> </div>
+            <div>Lace Coral  <span style='background-color: #fee0b6 '></span> </div>
+            <div>Stoloniferan Coral  <span style='background-color: #d8daeb '></span> </div>
+            <div>Soft Coral  <span style='background-color: #998ec3 '></span> </div>
+            <div>Stony Coral  <span style='background-color: #542788 '></span> </div>
+            <h2>Sponge Species</h2>
+            <div>Calcareous Sponge  <span style='background-color: #c51b7d  '></span> </div>
+            <div>Demosponge  <span style='background-color: #e9a3c9 '></span> </div>
+            <div>Glass Sponge  <span style='background-color: #fde0ef '></span> </div>
+            <div>Gold Sponge  <span style='background-color: #f7f7f7 '></span> </div>
+            <div>Sea Pen  <span style='background-color: #e6f5d0 '></span> </div>
+            <div>Homoscleromorph Sponge  <span style='background-color: #a1d76a '></span> </div>
+            <div>Sponge (Unspecified)  <span style='background-color: #4d9221 '></span> </div>
         </div>
     </div>
-
     <div id = 'chart-legend', class ='charts_depth'>
         <canvas id="depth_chart"></canvas>
     </div>
-     
-     <div id = 'chart-legend', class ='charts_count'>
+    <div id = 'chart-legend', class ='charts_count'>
         <canvas id="count_chart"></canvas>
     </div>
-
-     <!--<div id = 'chart-legend', class ='charts_depth_count'>
-        <canvas id="depth_count_chart"></canvas>
-    </div>-->
-
     <pre id='info'></pre>
     <nav id="menu"></nav>
 
+<!--==================================================Beginning of Javascript============================================
+    ===================================================================================================================-->
     <script>
         mapboxgl.accessToken = 'pk.eyJ1Ijoiam1kZXJvbWVkaSIsImEiOiJjanRvc3Flam4wMTdpNDRydjZ5Z2ZjZnIxIn0.ad5B5OFmvhdAfPOd3f38fA';
         var map = new mapboxgl.Map({
@@ -405,18 +399,21 @@
             url: 'mapbox://jmderomedi.4m9z82qw'
         },
         "source-layer": "updated_parsed-36sw6u",
+        'layout': {
+            'visibility': 'visible'
+        },
         "paint":{
             "heatmap-weight": [
-                "interpolate",
-                ["linear"],
-                ["get", "DepthInMeters"],
-                    0, 0.1,
-                    1000, 0.3,
-                    2000, 0.5,
-                    3000, 0.7,
-                    4000, 0.9,
-                    5000, 1.1,
-                    7000, 1.3     
+            "interpolate",
+            ["linear"],
+            ["get", "DepthInMeters"],
+            0, 0.1,
+            1000, 0.3,
+            2000, 0.5,
+            3000, 0.7,
+            4000, 0.9,
+            5000, 1.1,
+            7000, 1.3     
             ],
            // 'heatmap-weight': {
             //  property: 'dbh',
@@ -427,32 +424,32 @@
              // ]
           //},
     // increase intensity as zoom level increases
-        "heatmap-intensity": [
-            "interpolate",
-            ["linear"],
-            ["zoom"],
-            0, 0,
-            12, 1
-        ],
+    "heatmap-intensity": [
+    "interpolate",
+    ["linear"],
+    ["zoom"],
+    0, 0,
+    12, 1
+    ],
     // assign color values be applied to points depending on their density
     'heatmap-color': [
-        'interpolate',
-        ['linear'],
-        ['heatmap-density'],
-        0, 'rgba(255,255,178,0)',
-        0.3, '#fed976',
-        0.5, '#feb24c',
-        0.7, '#fd8d3c',
-        0.9, '#f03b20',
-        1.1, "#bd0026"
+    'interpolate',
+    ['linear'],
+    ['heatmap-density'],
+    0, 'rgba(255,255,178,0)',
+    0.3, '#fed976',
+    0.5, '#feb24c',
+    0.7, '#fd8d3c',
+    0.9, '#f03b20',
+    1.1, "#bd0026"
     ],
     // increase radius as zoom increases
     "heatmap-radius": [
-        "interpolate",
-        ["linear"],
-        ["zoom"],
-        0, 1,
-        12, 25
+    "interpolate",
+    ["linear"],
+    ["zoom"],
+    0, 1,
+    12, 25
     ],
     // decrease opacity to transition into the circle layer
     "heatmap-opacity": [
@@ -478,14 +475,17 @@
             url: 'mapbox://jmderomedi.4m9z82qw'
         },
         "source-layer": "updated_parsed-36sw6u",
+        'layout': {
+            'visibility': 'visible'
+        },
         "paint":{
-         "circle-opacity": [
-         "interpolate",
-         ["linear"],
-         ["zoom"],
-         6, 0,
-         7, 1
-         ],
+         //"circle-opacity": [
+         //"interpolate",
+         //["linear"],
+         //["zoom"],
+         //6, 0,
+         //7, 1
+         //],
          'circle-radius': [
          "interpolate",
          ["exponential", .8],
@@ -530,12 +530,12 @@
         "visibility": 'visible',
         "paint": {
             "circle-opacity": [
-         "interpolate",
-         ["linear"],
-         ["zoom"],
-         6, 0,
-         7, 1
-         ],
+            "interpolate",
+            ["linear"],
+            ["zoom"],
+            6, 0,
+            7, 1
+            ],
             "circle-stroke-width": 2,
             "circle-stroke-color": "#ffffff",
     //"circle-color": "#c3c5c9",
@@ -552,37 +552,37 @@
 "filter": ["in", "CatalogNumber", ""]
 });
 
-//=================================================Layer Changing Buttons========================================================
-    //=========================================================================================================
-  //  var toggleableLayerIds = [ 'coral', 'coral_heat' ];
+//=================================================Layer Changing Buttons==================================
+//=========================================================================================================
+var toggleableLayerIds = [ 'coral', 'coral_heat' ];
 
-    //for (var i = 0; i < toggleableLayerIds.length; i++) {
-     //   var id = toggleableLayerIds[i];
+for (var i = 0; i < toggleableLayerIds.length; i++) {
+    var id = toggleableLayerIds[i];
 
-     //   var link = document.createElement('a');
-     //   link.href = '#';
-      //  link.className = 'active';
-      //  link.textContent = id;
+    var link = document.createElement('a');
+    link.href = '#';
+    link.className = 'active';
+    link.textContent = id;
 
-       // link.onclick = function (e) {
-       //     var clickedLayer = this.textContent;
-       //     e.preventDefault();
-       //     e.stopPropagation();
+    link.onclick = function (e) {
+        var clickedLayer = this.textContent;
+        e.preventDefault();
+        e.stopPropagation();
 
-        //    var visibility = map.getLayoutProperty(clickedLayer, 'visibility');
+        var visibility = map.getLayoutProperty(clickedLayer, 'visibility');
 
-        //    if (visibility === 'visible') {
-         //       map.setLayoutProperty(clickedLayer, 'visibility', 'none');
-         //       this.className = '';
-         //   } else {
-        //        this.className = 'active';
-         //       map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
-         //   }
-       // };
+        if (visibility === 'visible') {
+            map.setLayoutProperty(clickedLayer, 'visibility', 'none');
+            this.className = '';
+        } else {
+            this.className = 'active';
+            map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
+        }
+    };
 
-       // var layers = document.getElementById('menu');
-      //  layers.appendChild(link);
-  //  }
+    var layers = document.getElementById('menu');
+    layers.appendChild(link);
+}
 
     //=================================================CANVAS/HIGHLIGHTING BOX========================================================
     //=========================================================================================================
@@ -632,7 +632,7 @@
     maxX = Math.max(start.x, current.x),
     minY = Math.min(start.y, current.y),
     maxY = Math.max(start.y, current.y);
- 
+
     // Adjust width and xy position of the box element ongoing
     var pos = 'translate(' + minX + 'px,' + minY + 'px)';
     box.style.transform = pos;
@@ -642,7 +642,7 @@
 }
 
 function onMouseUp(e) {
-   
+
     finish([start, mousePos(e)]);
     }//END onMouseUp
 
@@ -698,52 +698,41 @@ function onMouseUp(e) {
         return memo;
     }, ['in', 'CatalogNumber']);
 
-  
-
     var depthFilter = features.reduce(function(memo, feature) {
         memo.push(feature.properties.DepthInMeters);
         return memo;
     }, ['in', 'DepthInMeters']);
 
-
-     var nameFilter = features.reduce(function(memo, feature) {
+    var nameFilter = features.reduce(function(memo, feature) {
         memo.push(feature.properties.VernacularNameCategory);
         return memo;
     }, ['in', 'VernacularNameCategory']);
-  
-    //console.log(bar_chart_depth.data.datasets[0].data);
+
     removeData(bar_chart_depth);
     removeData(bar_chart_count);
-    //console.log(bar_chart_depth.data.datasets[0].data);
-
-
     var i;
     for (i = 2; i < depthFilter.length; i++) { 
         addDepthData(bar_chart_depth, nameFilter[i], depthFilter[i]);
         addCountData(bar_chart_count, nameFilter[i]);
-        
     };
     computeAddDepthData(bar_chart_depth);
     computeAddCountData(bar_chart_count);
-    //console.log(bar_chart_depth.data);
     console.log(bar_chart_count.data);
-    
 }
 
-  map.setFilter("coral_highlighted", filter);
+map.setFilter("coral_highlighted", filter);
     //Reactivate grab panning for the user
     map.dragPan.enable();
     map.setLayoutProperty('coral_highlighted', 'visibility', 'visible');
     }//END finish
 
-    
     map.on('mousemove', function(e) {
         document.getElementById('info').innerHTML =
-    JSON.stringify(e.lngLat, function(key, val) {
-        return val.toFixed ? Number(val.toFixed(3)) : val;
-    })
+        JSON.stringify(e.lngLat, function(key, val) {
+            return val.toFixed ? Number(val.toFixed(3)) : val;
+        })
 
-    if(isClicked){
+        if(isClicked){
         var ll = e.lngLat.toArray();        //Array of long/lat coordinate
         var lat = ll[1] * (Math.PI / 180);
         var long = ll[0] * (Math.PI / 180);
@@ -778,7 +767,7 @@ function onMouseUp(e) {
 
     }); //END MAP.ON
 //============================================================Chart Stuff==========================================================================
-//var barChartlabels = ['stony coral (unspecified)', 'sponge (unspecified)', "sea pen", "soft coral", "glass sponge"];
+//==============================================================================================================================
 var ctx_depth = document.getElementById('depth_chart').getContext('2d');
 var bar_chart_depth = new Chart(ctx_depth, {
     // The type of chart we want to create
@@ -836,14 +825,14 @@ function addDepthData(chart, label, data) {
     depthCounts.push(1);
     var k;
     for (k = 0; k < chart.data.labels.length - 1; k++) {
-          if (chart.data.labels[k] == label){
-            depthAverages[k] += data;
-            depthCounts[k] += 1;
-            chart.data.labels.pop();
-            depthAverages.pop();
-            depthCounts.pop();
-        }
-    }   
+      if (chart.data.labels[k] == label){
+        depthAverages[k] += data;
+        depthCounts[k] += 1;
+        chart.data.labels.pop();
+        depthAverages.pop();
+        depthCounts.pop();
+    }
+}   
 }
 
 function computeAddDepthData(chart){
@@ -851,7 +840,7 @@ function computeAddDepthData(chart){
     for (l = 0; l < depthAverages.length; l++){
         depthAverages[l] = depthAverages[l]/depthCounts[l];
         chart.data.datasets.forEach((dataset) => {
-        dataset.data.push(depthAverages[l]);
+            dataset.data.push(depthAverages[l]);
         });
     }
     chart.update();
@@ -863,12 +852,12 @@ function addCountData(chart, label) {
     countCounts.push(1);
     var k;
     for (k = 0; k < chart.data.labels.length -1; k++) {
-          if (chart.data.labels[k] == label){
-            countCounts[k] += 1;
-            chart.data.labels.pop();
-            countCounts.pop();
-        }
+      if (chart.data.labels[k] == label){
+        countCounts[k] += 1;
+        chart.data.labels.pop();
+        countCounts.pop();
     }
+}
 }
 
 function computeAddCountData(chart){
@@ -876,7 +865,7 @@ function computeAddCountData(chart){
     var l;
     for (l = 0; l < countCounts.length; l++){
         chart.data.datasets.forEach((dataset) => {
-        dataset.data.push(countCounts[l]);
+            dataset.data.push(countCounts[l]);
         });
     }
     chart.update(); 
@@ -897,7 +886,7 @@ function removeData(chart) {
     chart.update();
 }
 
-    console.log(map);
+console.log(map);
 </script>
 
 
