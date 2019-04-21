@@ -1,0 +1,10 @@
+Items that I wished I could get done with the project
+	-Having an indicator that data is loading
+	-More types of data that could be used for analysis
+	-Unique shapes for type of species
+	-Bind the map to specific locations
+	-Have larger dataset
+	-Able to seperate the nodes somehow
+	-Search function
+	-Able to customize type of graphs
+	-

@@ -27,7 +27,7 @@
             padding: 10px;
             position: absolute;
             left: 10px;
-            z-index: 1;
+            
         }
         .charts_depth div span {
             border-radius: 50%;
@@ -47,7 +47,7 @@
             padding: 10px;
             position: absolute;
             left: 10px;
-            z-index: 1;
+            
         }
         .charts_count div span {
             border-radius: 50%;
@@ -67,7 +67,7 @@
             padding: 10px;
             position: absolute;
             left: 10px;
-            z-index: 1;
+            
         }
         .charts_depth_count div span {
             border-radius: 50%;
@@ -116,7 +116,7 @@
             padding: 10px;
             position: absolute;
             left:10px;
-            z-index: 1;
+           
         }
         .boxdraw {
             background: rgba(56,135,190,0.1);
@@ -139,7 +139,7 @@
         #menu {
             background: #ffffff;
             position: absolute;
-            z-index: 1;
+            
             bottom: 370px;
             right: 10px;
             font: 18px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
@@ -147,7 +147,6 @@
             padding: 5px;
             position: absolute;
             right: 10px;
-            z-index: 1;
         }
 
         #menu a {
@@ -178,10 +177,72 @@
         #menu a.active:hover {
             background: #3074a4;
         }
+        .modal {
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            padding-top: 300px; /* Location of the box */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+
+            /* Modal Content */
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            text-align: center;
+        }
+
+        /* The Close Button */
+        .close {
+            color: #aaaaaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
     </style>
 
 </head>
 <body>
+    <div id = 'shadowbox' class = 'shadow'>
+       
+       
+    </div>
+
+    <div id="myModal" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <h2> Welcome to Deep-Sea Interactive Visualization Experience</h2>
+            <p></p>
+            <p><b>Movement:</b><br>
+            Left Mouse Button :: Pan<br>
+            Mouse Roller :: Zoom<br>
+            
+            <br><b>Filter:</b>
+            <br>
+            Shift+Left Mouse :: Highlight Filter<br>
+            Esc :: Reset Filter
+            </p>
+             <button type="button" onclick="removeElement('myModal')">Understood!</button>
+        </div>
+
+    </div>
+
     <div id='map'>
         <div id='coral-legend' class='legend'>
             <h2>Coral Species</h2>
@@ -918,6 +979,11 @@
         }//END removeData()
 
 
+        function removeElement(elementId) {
+            // Removes an element from the document
+            var element = document.getElementById(elementId);
+            element.parentNode.removeChild(element);
+        }
         //console.log(map);
     </script>
 
